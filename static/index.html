@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+        header { background: #1a1d2e; border-bottom: 1px solid #2d3748; padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; }
+        header h1 { font-size: 1.4rem; font-weight: 600; color: #63b3ed; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #48bb78; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .card { background: #1a1d2e; border: 1px solid #2d3748; border-radius: 12px; padding: 1.5rem; }
+        .card h3 { font-size: 0.85rem; color: #718096; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .metric-value { font-size: 2.5rem; font-weight: 700; }
+        .metric-value.good { color: #48bb78; }
+        .metric-value.warning { color: #ecc94b; }
+        .metric-value.danger { color: #fc8181; }
+        .progress-bar { background: #2d3748; border-radius: 4px; height: 6px; margin-top: 0.75rem; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+        .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .service-card { background: #1a1d2e; border: 1px solid #2d3748; border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; }
+        .service-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .service-dot.up { background: #48bb78; }
+        .service-dot.down { background: #fc8181; }
+        .service-name { font-weight: 500; font-size: 0.95rem; }
+        .service-status { font-size: 0.8rem; color: #718096; margin-top: 2px; }
+        .section-title { font-size: 1rem; font-weight: 600; color: #a0aec0; margin-bottom: 1rem; }
+        .refresh-btn { background: #2b6cb0; color: white; border: none; padding: 0.5rem 1.25rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; margin-left: auto; display: block; margin-bottom: 1.5rem; }
+        .refresh-btn:hover { background: #3182ce; }
+        .last-updated { font-size: 0.8rem; color: #4a5568; text-align: right; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="status-dot"></div>
+        <h1>DevOps Dashboard</h1>
+    </header>
+    <div class="container">
+        <button class="refresh-btn" onclick="fetchData()">Refresh</button>
+        <p class="section-title">System Metrics</p>
+        <div class="grid">
+            <div class="card">
+                <h3>CPU Usage</h3>
+                <div class="metric-value good" id="cpu-val">-</div>
+                <div class="progress-bar"><div class="progress-fill" id="cpu-bar" style="width:0%;background:#48bb78"></div></div>
+            </div>
+            <div class="card">
+                <h3>Memory Usage</h3>
+                <div class="metric-value good" id="mem-val">-</div>
+                <div class="progress-bar"><div class="progress-fill" id="mem-bar" style="width:0%;background:#48bb78"></div></div>
+            </div>
+            <div class="card">
+                <h3>Disk Usage</h3>
+                <div class="metric-value good" id="disk-val">-</div>
+                <div class="progress-bar"><div class="progress-fill" id="disk-bar" style="width:0%;background:#48bb78"></div></div>
+            </div>
+        </div>
+        <p class="section-title">Services</p>
+        <div class="services-grid" id="services-grid"></div>
+        <div class="last-updated" id="last-updated"></div>
+    </div>
+    <script>
+        function getColor(val) {
+            if (val < 60) return '#48bb78';
+            if (val < 80) return '#ecc94b';
+            return '#fc8181';
+        }
+        function getClass(val) {
+            if (val < 60) return 'good';
+            if (val < 80) return 'warning';
+            return 'danger';
+        }
+        function setMetric(valId, barId, value) {
+            const el = document.getElementById(valId);
+            const bar = document.getElementById(barId);
+            el.textContent = value + '%';
+            el.className = 'metric-value ' + getClass(value);
+            bar.style.width = value + '%';
+            bar.style.background = getColor(value);
+        }
+        async function fetchData() {
+            try {
+                const [metrics, services] = await Promise.all([
+                    fetch('/api/metrics').then(r => r.json()),
+                    fetch('/api/services').then(r => r.json())
+                ]);
+                setMetric('cpu-val', 'cpu-bar', metrics.cpu);
+                setMetric('mem-val', 'mem-bar', metrics.memory);
+                setMetric('disk-val', 'disk-bar', metrics.disk);
+                const grid = document.getElementById('services-grid');
+                grid.innerHTML = services.map(s => `
+                    <div class="service-card">
+                        <div class="service-dot ${s.status}"></div>
+                        <div>
+                            <div class="service-name">${s.name}</div>
+                            <div class="service-status">${s.status === 'up' ? 'Operational' : 'Down'}</div>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('last-updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+            } catch(e) { console.error(e); }
+        }
+        fetchData();
+        setInterval(fetchData, 30000);
+    </script>
+</body>
+</html>

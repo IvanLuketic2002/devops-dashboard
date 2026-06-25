@@ -1,0 +1,21 @@
+INFO:     Started server process [13319]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:36182 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2192 - "GET / HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2192 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2201 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     198.143.181.199:2193 - "GET /api/services HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2201 - "GET /api/services HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2193 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2223 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2224 - "GET /api/services HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2224 - "GET /api/services HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2223 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2224 - "GET /api/services HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2223 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2247 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2246 - "GET /api/services HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2281 - "GET /api/metrics HTTP/1.1" 200 OK
+INFO:     198.143.181.199:2282 - "GET /api/services HTTP/1.1" 200 OK
