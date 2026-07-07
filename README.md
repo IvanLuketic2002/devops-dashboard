@@ -2,8 +2,17 @@
 
 Internal DevOps dashboard for real-time infrastructure monitoring. Aggregates metrics from Prometheus and displays them in a single-pane-of-glass view.
 
+## Screenshots
+
+### Dashboard
+![DevOps Dashboard](docs/images/dashboard.png)
+
+### API Documentation
+![API Docs](docs/images/api.png)
+
 ## Live Demo
-- **Dashboard:** http://18.199.150.120:8000
+- **Dashboard:** http://3.123.209.133:8000
+- **API Docs:** http://3.123.209.133:8000/docs
 
 ## Architecture
 
